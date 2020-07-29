@@ -8,6 +8,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company />
     <PackageTags>Excel, TXT</PackageTags>
+    <PackageLicenseUrl>https://github.com/MichaelHorta/ExcelToTxtConverter/blob/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
 
   <ItemGroup>
