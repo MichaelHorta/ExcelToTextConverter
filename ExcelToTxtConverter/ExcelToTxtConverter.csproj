@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
+    <Authors>Michael Horta Fleitas</Authors>
+    <PackageProjectUrl>https://github.com/MichaelHorta/ExcelToTxtConverter</PackageProjectUrl>
+    <Copyright>Copyright © 2020 Michael Horta Fleitas</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Company />
+    <PackageTags>Excel, TXT</PackageTags>
+    <PackageLicenseUrl>https://github.com/MichaelHorta/ExcelToTxtConverter/blob/master/LICENSE</PackageLicenseUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EPPlus.Core" Version="1.5.4" />
+  </ItemGroup>
+
+</Project>
