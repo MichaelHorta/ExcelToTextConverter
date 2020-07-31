@@ -89,7 +89,7 @@ public static string RetrieveGroupKey(int indexRecord, IList<ExcelToTxtConverter
     }
     catch (Exception)
     {
-        Console.WriteLine(string.Format("Error parseando fecha: {0} con formato: {1}", cellValue, cellFormat));
+        Console.WriteLine(string.Format("Error parsing date: {0} with format: {1}", cellValue, cellFormat));
         throw;
     }
 
