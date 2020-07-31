@@ -17,3 +17,12 @@ Benefits and Features
 - Optionally, group by column
 - Only support for XLSX file
 - Supports .NET Standard 1.3, .NET 4
+
+Example
+```C#
+Assembly assembly = typeof(MyClass).GetTypeInfo().Assembly;
+Stream definitionStream = assembly.GetManifestResourceStream(definitionFile));
+XElement definitionElement = XElement.Load(definitionStream);
+Converter converter = new Converter(definitionElement);
+IDictionary<string, StringBuilder> stringBuildersResult = converter.Execute(excelBytes);
+```
