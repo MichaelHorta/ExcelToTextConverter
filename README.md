@@ -66,14 +66,14 @@ Group by Column
 -------
 In this point its neccesary indicates a function that builds the group identifier
 ```C#
-public static string RetrieveGroupKey(int indexRecord, IList<ExcelToTxtConverter.ColumnHeadData> lceColumnList, ExcelWorksheet excelWorksheet)
+public static string RetrieveGroupKey(int indexRecord, IList<ExcelToTxtConverter.ColumnHeadData> columnList, ExcelWorksheet excelWorksheet)
 {
     string cellValue = string.Empty;
     string cellFormat = string.Empty;
     DateTime? dateValue = null;
     try
     {
-        var col = lceColumnList.Where(o => o.ExcelID.Equals("Fecha")).FirstOrDefault();
+        var col = columnList.Where(o => o.ExcelID.Equals("Fecha")).FirstOrDefault();
         var cell = excelWorksheet.Cells[indexRecord, col.ColumnPosition];
         cellValue = cell.Text?.ToString();
         cellFormat = cell.Style.Numberformat.Format;
