@@ -61,3 +61,49 @@ Indicate in the XML definition the orderable column
 ```XML
 <Column ExcelID="Codigo Cuenta" TxtColumnText="&lt;CodigoCuenta&gt;" TxtTextPosition="0" Orderable="int|string"></Column>
 ```
+
+Group by Column
+-------
+In this point its neccesary indicates a function that builds the group identifier
+```C#
+public static string RetrieveGroupKey(int indexRecord, IList<ExcelToTxtConverter.ColumnHeadData> lceColumnList, ExcelWorksheet excelWorksheet)
+{
+    string cellValue = string.Empty;
+    string cellFormat = string.Empty;
+    DateTime? dateValue = null;
+    try
+    {
+        var col = lceColumnList.Where(o => o.ExcelID.Equals("Fecha")).FirstOrDefault();
+        var cell = excelWorksheet.Cells[indexRecord, col.ColumnPosition];
+        cellValue = cell.Text?.ToString();
+        cellFormat = cell.Style.Numberformat.Format;
+
+        var filteredFormat = "dd\\-mm\\-yyyy";
+        if (string.Equals(cellFormat, filteredFormat, StringComparison.InvariantCultureIgnoreCase))
+        {
+            cell.Style.Numberformat.Format = "mm/dd/yyyy";
+            cellValue = cell.Text?.ToString();
+        }
+
+        dateValue = DateTime.Parse(cellValue);
+    }
+    catch (Exception)
+    {
+        Console.WriteLine(string.Format("Error parseando fecha: {0} con formato: {1}", cellValue, cellFormat));
+        throw;
+    }
+
+    return string.Format("{0}{1}" + dateValue.Value.Year, dateValue.Value.ToString("MM"));
+}
+```
+
+```C#
+Assembly assembly = typeof(MyClass).GetTypeInfo().Assembly;
+Stream definitionStream = assembly.GetManifestResourceStream(definitionFile));
+XElement definitionElement = XElement.Load(definitionStream);
+
+Func<int, IList<ColumnHeadData>, ExcelWorksheet, string> retrieveGroupKeyFunction = new Func<int, IList<ColumnHeadData>, ExcelWorksheet, string>(RetrieveGroupKey);
+
+Converter converter = new Converter(definitionElement, retrieveGroupKeyFunction);
+IDictionary<string, StringBuilder> stringBuildersResult = converter.Execute(excelBytes);
+```
