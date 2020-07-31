@@ -54,3 +54,10 @@ Example of Definition
     </Table>
 </Definition>
 ```
+
+Sort by Column
+-------
+Indicate in the XML definition the orderable column
+```XML
+<Column ExcelID="Codigo Cuenta" TxtColumnText="&lt;CodigoCuenta&gt;" TxtTextPosition="0" Orderable="int|string"></Column>
+```
