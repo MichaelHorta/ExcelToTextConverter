@@ -1,6 +1,6 @@
-﻿using OfficeOpenXml;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using System.Xml.Linq;
 
@@ -30,9 +30,9 @@ namespace ExcelToTxtConverter
             buildersDictionary[builderKey].AppendLine(headLine);
         }
 
-        public override void Execute(ExcelWorksheet excelWorksheet, IList<ColumnHeadData> columnList, XElement definition, Func<int, IList<ColumnHeadData>, ExcelWorksheet, string> grouperFunction)
+        public override void Execute(DataTable dataTable, IList<ColumnHeadData> columnList, XElement definition, Func<int, IList<ColumnHeadData>, DataTable, string> grouperFunction, Func<int, IList<ColumnHeadData>, DataTable, bool> ignoreRowFunction)
         {
-            InitializeExecution(excelWorksheet, columnList, definition, grouperFunction);
+            InitializeExecution(dataTable, columnList, definition, grouperFunction);
 
             for (int i = 0; i < columnList.Count; i++)
             {
@@ -40,38 +40,33 @@ namespace ExcelToTxtConverter
                 ConcatenateHeadLine(col.TxtColumnText, columnList[i].TxtTextPosition);
             }
 
-            int totalRows = excelWorksheet.Dimension.Rows;
-            for (int i = 2; i <= totalRows; i++)
+            int rowsCount = dataTable.Rows.Count;
+            for (int i = 1; i < rowsCount; i++)
             {
-                if (IsEmptyRow(i))
-                    continue;
+                if (IsEmptyRow(i) || ignoreRowFunction(i, columnList, dataTable))
+                      continue;
+
                 string builderKey = RetrieveBuilderKey(i);
 
-                for (int j = 0; j < columnList.Count - 1; j++)
+                for (int j = 0; j < columnList.Count; j++)
                 {
                     var col = columnList[j];
-
-                    var cell = excelWorksheet.Cells[i, col.ColumnPosition];
-
-                    ApplyFormatToCell(col, cell);
-
-                    var cellValue = cell.Text?.ToString();
-
-                    cellValue = ApplyFormatToValue(col, cellValue);
+                    var cellValue = string.Empty;
+                    if (col.ColumnPosition != -1)
+                    {
+                        var cell = dataTable.Rows[i][col.ColumnPosition];
+                        cellValue = cell?.ToString();
+                        cellValue = ApplyFormatToValue(col, cellValue);
+                    }
 
                     WriteRecord(new TextRecord()
                     {
                         Value = cellValue ?? string.Empty,
                         ColumnHeadData = col
-                    }, builderKey, columnList[j + 1].TxtTextPosition - columnList[j].TxtTextPosition);
+                    }, builderKey, j < columnList.Count - 1 ? columnList[j + 1].TxtTextPosition - columnList[j].TxtTextPosition : -1);
                 }
-                WriteRecord(new TextRecord()
-                {
-                    Value = excelWorksheet.Cells[i, columnList[columnList.Count - 1].ColumnPosition].Value?.ToString() ?? string.Empty,
-                    ColumnHeadData = columnList[columnList.Count - 1]
-                }, builderKey);
 
-                if (i < totalRows)
+                if (i < rowsCount)
                     AppendLine(builderKey);
             }
         }
