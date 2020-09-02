@@ -71,12 +71,12 @@ namespace ExcelToTxtConverter
             }
         }
 
-        private void AppendLine(string builderKey)
+        protected void AppendLine(string builderKey)
         {
             buildersDictionary[builderKey].AppendLine();
         }
 
-        private void WriteRecord(TextRecord record, string builderKey, int distance = -1)
+        protected void WriteRecord(TextRecord record, string builderKey, int distance = -1)
         {
             if (distance != -1 && record.Value.Length > distance)
                 record.Value = record.Value.Substring(0, distance);

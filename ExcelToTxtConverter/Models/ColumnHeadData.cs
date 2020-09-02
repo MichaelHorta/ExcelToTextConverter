@@ -10,9 +10,10 @@ namespace ExcelToTxtConverter
         public string TxtColumnText { get; set; }
         public int TxtTextPosition { get; set; }
         public int ColumnPosition { get; set; }
-        public CellFormat? CellFormat { get; set; }
+        public string CellFormat { get; set; }
         public OrderableAttribute Orderable { get; set; }
         public bool GroupKey { get; set; }
+        public IDictionary<string, string> CustomAttributes { get; set; }
     }
 
     public class OrderableAttribute

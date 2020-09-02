@@ -7,6 +7,8 @@ namespace ExcelToTxtConverter
 {
     public class DateCellFormatter : ICellValueFormatter
     {
+        public static string Identifier = "0";
+        
         public string ApplyFormatToValue(string cellValue)
         {
             if (string.IsNullOrEmpty(cellValue))

@@ -10,7 +10,7 @@ namespace ExcelToTxtConverter
     public class TextWriterBase
     {
         public DataTable DataTable { get; set; }
-        private XElement Definition { get; set; }
+        protected XElement Definition { get; set; }
         public IList<ColumnHeadData> ColumnList { get; private set; }
 
         public TextWriterBase(DataTable dataTable, XElement definition)
@@ -55,7 +55,14 @@ namespace ExcelToTxtConverter
                 var cellFormatAttribute = element.Attribute("CellFormat");
                 if (null != cellFormatAttribute && !string.IsNullOrEmpty(cellFormatAttribute.Value))
                 {
-                    columnHeadData.CellFormat = (CellFormat)Enum.Parse(typeof(CellFormat), cellFormatAttribute.Value);
+                    columnHeadData.CellFormat = cellFormatAttribute.Value;
+                }
+
+                columnHeadData.CustomAttributes = new Dictionary<string, string>();
+                var customAttributes = element.Attributes().Where(attr => !attr.Name.LocalName.Equals("ExcelID") && !attr.Name.LocalName.Equals("TxtColumnText") && !attr.Name.LocalName.Equals("TxtTextPosition") && !attr.Name.LocalName.Equals("GroupKey") && !attr.Name.LocalName.Equals("CellFormat"));
+                foreach (var customAttr in customAttributes)
+                {
+                    columnHeadData.CustomAttributes.Add(customAttr.Name.LocalName, customAttr.Value.ToString());
                 }
 
                 IdentifyOrderableColumn(element, columnHeadData);
@@ -63,7 +70,7 @@ namespace ExcelToTxtConverter
             ColumnList = ColumnList.OrderBy(c => c.TxtTextPosition).ToList();
         }
 
-        private ColumnHeadData orderableColumnHeadData;
+        protected ColumnHeadData orderableColumnHeadData;
         private void IdentifyOrderableColumn(XElement column, ColumnHeadData columnHeadData)
         {
             if (null != orderableColumnHeadData)
@@ -80,8 +87,8 @@ namespace ExcelToTxtConverter
             }
         }
 
-        TextOrderableBase textOrderableWriter;
-        public void Execute(Func<int, IList<ColumnHeadData>, DataTable, string> grouperFunction, Func<int, IList<ColumnHeadData>, DataTable, bool> ignoreRowFunction)
+        protected TextOrderableBase textOrderableWriter;
+        public virtual void Execute(Func<int, IList<ColumnHeadData>, DataTable, string> grouperFunction, Func<int, IList<ColumnHeadData>, DataTable, bool> ignoreRowFunction)
         {
 
             if (null == grouperFunction)
@@ -97,7 +104,7 @@ namespace ExcelToTxtConverter
         }
 
         static string defaultSeparatorGuid = null;
-        private static string DefaultGrouperFunction(int indexRecord, IList<ColumnHeadData> columnList, DataTable dataTable)
+        protected static string DefaultGrouperFunction(int indexRecord, IList<ColumnHeadData> columnList, DataTable dataTable)
         {
             if (string.IsNullOrEmpty(defaultSeparatorGuid))
             {
@@ -106,7 +113,7 @@ namespace ExcelToTxtConverter
             return defaultSeparatorGuid;
         }
 
-        public static bool DefaultIgnoreRowFunction(int rowIndex, IList<ColumnHeadData> columnList, DataTable dataTable)
+        protected static bool DefaultIgnoreRowFunction(int rowIndex, IList<ColumnHeadData> columnList, DataTable dataTable)
         {
             return false;
         }
