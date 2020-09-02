@@ -22,7 +22,7 @@ namespace ExcelToTxtConverter.Tests
         [Fact]
         public void Test2()
         {
-            var definitionResource = RetrieveEmbeddedResourceAsStream("definition.xml");
+            var definitionResource = RetrieveEmbeddedResourceAsStream("LM_Definition.xml");
             var definition = XElement.Load(definitionResource);
             var converter = new Converter(definition);
             var excelData = RetrieveEmbeddedResourceAsByteArray("LM_76166365-8_201701_0_1581301f-32f9-4119-8723-e6193bcd86cc_prod.xlsx");
