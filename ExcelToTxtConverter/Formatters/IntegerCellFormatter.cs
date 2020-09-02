@@ -7,6 +7,8 @@ namespace ExcelToTxtConverter
 {
     public class IntegerCellFormatter : ICellValueFormatter
     {
+        public static string Identifier = "1";
+
         const NumberStyles numStyle = NumberStyles.AllowThousands;
         CultureInfo culture = new CultureInfo("en-US");
         public string ApplyFormatToValue(string cellValue)

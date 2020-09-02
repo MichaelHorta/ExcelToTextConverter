@@ -4,6 +4,8 @@ namespace ExcelToTxtConverter
 {
     public class DecimalCellFormatter : ICellValueFormatter
     {
+        public static string Identifier = "3";
+
         const NumberStyles numStyle = NumberStyles.AllowThousands;
         CultureInfo culture = new CultureInfo("en-US");
 
