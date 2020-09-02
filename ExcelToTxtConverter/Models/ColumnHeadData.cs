@@ -12,6 +12,7 @@ namespace ExcelToTxtConverter
         public int ColumnPosition { get; set; }
         public CellFormat? CellFormat { get; set; }
         public OrderableAttribute Orderable { get; set; }
+        public bool GroupKey { get; set; }
     }
 
     public class OrderableAttribute
