@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net46</TargetFrameworks>
     <Authors>Michael Horta Fleitas</Authors>
     <PackageProjectUrl>https://github.com/MichaelHorta/ExcelToTxtConverter</PackageProjectUrl>
     <Copyright>Copyright © 2020 Michael Horta Fleitas</Copyright>
@@ -9,10 +9,16 @@
     <Company />
     <PackageTags>Excel, TXT</PackageTags>
     <PackageLicenseUrl>https://github.com/MichaelHorta/ExcelToTxtConverter/blob/master/LICENSE</PackageLicenseUrl>
+    <Version>1.1.0</Version>
+    <PackageReleaseNotes>Supporting for:
+- Binary Excel files (2.0-2003 format; *.xls)
+- OpenXml Excel files (2007 format; *.xlsx, *.xlsb)</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPPlus.Core" Version="1.5.4" />
+    <PackageReference Include="ExcelDataReader" Version="3.7.0-develop00310" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.7.0-develop00310" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
   </ItemGroup>
 
 </Project>

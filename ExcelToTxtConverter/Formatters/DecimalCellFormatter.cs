@@ -1,20 +1,13 @@
-﻿using OfficeOpenXml;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿using System.Globalization;
 
 namespace ExcelToTxtConverter
 {
-    public class DecimalCellFormatter : ICellValueFormatter, ICellFormatter
+    public class DecimalCellFormatter : ICellValueFormatter
     {
+        public static string Identifier = "3";
+
         const NumberStyles numStyle = NumberStyles.AllowThousands;
         CultureInfo culture = new CultureInfo("en-US");
-
-        public void ApplyFormatToCell(ExcelRange excelRange)
-        {
-            excelRange.Style.Numberformat.Format = "0.0000000";
-        }
 
         public string ApplyFormatToValue(string cellValue)
         {

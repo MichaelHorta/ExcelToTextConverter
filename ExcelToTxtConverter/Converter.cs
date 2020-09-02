@@ -1,8 +1,8 @@
-﻿using OfficeOpenXml;
+﻿using ExcelDataReader;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Xml.Linq;
 
@@ -18,20 +18,15 @@ namespace ExcelToTxtConverter
             Definition = definition;
         }
 
-        public IDictionary<string, StringBuilder> Execute(byte[] excelData, Func<int, IList<ColumnHeadData>, ExcelWorksheet, string> grouperFunction = null)
+        public IDictionary<string, StringBuilder> Execute(byte[] excelData, Func<int, IList<ColumnHeadData>, DataTable, string> grouperFunction = null, Func<int, IList<ColumnHeadData>, DataTable, bool> ignoreRowFunction = null)
         {
             try
             {
-                var lceExcelDataStream = new MemoryStream(excelData);
-                var package = new ExcelPackage();
-                package.Load(lceExcelDataStream);
-                ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
+                var dataReader = new DataReader();
+                var dataTable = dataReader.Execute(excelData);
 
-                if (null == grouperFunction)
-                    grouperFunction = new Func<int, IList<ColumnHeadData>, ExcelWorksheet, string>(DefaultGrouperFunction);
-
-                var lceTxtWriter = new TextWriterBase(worksheet, Definition);
-                lceTxtWriter.Execute(grouperFunction);
+                var lceTxtWriter = new TextWriterBase(dataTable, Definition);
+                lceTxtWriter.Execute(grouperFunction, ignoreRowFunction);
                 ColumnList = lceTxtWriter.ColumnList;
 
                 return lceTxtWriter.GetBuilders();
@@ -40,16 +35,6 @@ namespace ExcelToTxtConverter
             {
                 throw new Exception("Error executing conversion", ex);
             }
-        }
-
-        static string defaultSeparatorGuid = null;
-        private static string DefaultGrouperFunction(int indexRecord, IList<ColumnHeadData> lceColumnList, ExcelWorksheet excelWorksheet)
-        {
-            if (string.IsNullOrEmpty(defaultSeparatorGuid))
-            {
-                defaultSeparatorGuid = Guid.NewGuid().ToString();
-            }
-            return defaultSeparatorGuid;
         }
     }
 }

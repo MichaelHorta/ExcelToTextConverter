@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Linq;
-using OfficeOpenXml;
 using System.Linq;
+using System.Data;
 
 namespace ExcelToTxtConverter
 {
     public class TextOrderableWriter : TextOrderableBase
     {
-        private IDictionary<string, OrderableGroup> buildersDictionary;
-        private ColumnHeadData orderableColumnHeadData;
+        private readonly IDictionary<string, OrderableGroup> buildersDictionary;
+        protected ColumnHeadData orderableColumnHeadData;
 
         public TextOrderableWriter() : base()
         {
@@ -32,9 +32,9 @@ namespace ExcelToTxtConverter
             buildersDictionary[builderKey].CommonBuilder.AppendLine(headLine);
         }
 
-        public override void Execute(ExcelWorksheet excelWorksheet, IList<ColumnHeadData> columnList, XElement definition, Func<int, IList<ColumnHeadData>, ExcelWorksheet, string> grouperFunction)
+        public override void Execute(DataTable dataTable, IList<ColumnHeadData> columnList, XElement definition, Func<int, IList<ColumnHeadData>, DataTable, string> grouperFunction, Func<int, IList<ColumnHeadData>, DataTable, bool> ignoreRowFunction)
         {
-            InitializeExecution(excelWorksheet, columnList, definition, grouperFunction);
+            InitializeExecution(dataTable, columnList, definition, grouperFunction);
 
             IdentifyOrderableColumn();
 
@@ -44,25 +44,26 @@ namespace ExcelToTxtConverter
                 ConcatenateHeadLine(col.TxtColumnText, columnList[i].TxtTextPosition);
             }
 
-            int totalRows = excelWorksheet.Dimension.Rows;
-            for (int i = 2; i <= totalRows; i++)
+            int rowsCount = dataTable.Rows.Count;
+            for (int i = 1; i < rowsCount; i++)
             {
-                if (IsEmptyRow(i))
+                if (IsEmptyRow(i) || ignoreRowFunction(i, columnList, dataTable))
                     continue;
+
                 string builderKey = RetrieveBuilderKey(i);
                 string line = string.Empty;
                 string orderableKeyGroupValue = string.Empty;
-                for (int j = 0; j < columnList.Count - 1; j++)
+                for (int j = 0; j < columnList.Count; j++)
                 {
                     var col = columnList[j];
 
-                    var cell = excelWorksheet.Cells[i, col.ColumnPosition];
-
-                    ApplyFormatToCell(col, cell);
-
-                    var cellValue = cell.Text?.ToString();
-
-                    cellValue = ApplyFormatToValue(col, cellValue);
+                    var cellValue = string.Empty;
+                    if (col.ColumnPosition != -1)
+                    {
+                        var cell = dataTable.Rows[i][col.ColumnPosition];
+                        cellValue = cell?.ToString();
+                        cellValue = ApplyFormatToValue(col, cellValue);
+                    }
 
                     if (col.Equals(orderableColumnHeadData))
                     {
@@ -73,24 +74,19 @@ namespace ExcelToTxtConverter
                     {
                         Value = cellValue ?? string.Empty,
                         ColumnHeadData = col
-                    }, columnList[j + 1].TxtTextPosition - columnList[j].TxtTextPosition);
+                    }, j < columnList.Count - 1 ? columnList[j + 1].TxtTextPosition - columnList[j].TxtTextPosition : -1);
                 }
-                line = WriteRecordInLine(line, new TextRecord()
-                {
-                    Value = excelWorksheet.Cells[i, columnList[columnList.Count - 1].ColumnPosition].Value?.ToString() ?? string.Empty,
-                    ColumnHeadData = columnList[columnList.Count - 1]
-                });
 
                 WriteLine(line, builderKey, orderableKeyGroupValue);
             }
         }
 
-        private void IdentifyOrderableColumn()
+        protected void IdentifyOrderableColumn()
         {
             orderableColumnHeadData = columnList.FirstOrDefault(c => null != c.Orderable);
         }
 
-        private string WriteRecordInLine(string line, TextRecord record, int distance = -1)
+        protected string WriteRecordInLine(string line, TextRecord record, int distance = -1)
         {
             if (distance != -1 && record.Value.Length > distance)
                 record.Value = record.Value.Substring(0, distance);
@@ -102,7 +98,7 @@ namespace ExcelToTxtConverter
             return line;
         }
 
-        private void WriteLine(string line, string builderKey, string orderableKeyGroupValue)
+        protected void WriteLine(string line, string builderKey, string orderableKeyGroupValue)
         {
             var orderableGroup = buildersDictionary[builderKey];
             orderableGroup.BuildersRecordsTable.TryGetValue(orderableKeyGroupValue, out StringBuilder stringBuilder);

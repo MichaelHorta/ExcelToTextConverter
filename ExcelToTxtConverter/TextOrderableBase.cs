@@ -1,6 +1,6 @@
-﻿using OfficeOpenXml;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 using System.Xml.Linq;
 
@@ -8,35 +8,29 @@ namespace ExcelToTxtConverter
 {
     public abstract class TextOrderableBase
     {
-        protected ExcelWorksheet excelWorksheet;
+        protected DataTable dataTable;
         protected IList<ColumnHeadData> columnList;
         protected XElement definition;
-        private IDictionary<CellFormat, ICellValueFormatter> cellFormattersToValueDictionary;
-        private IDictionary<CellFormat, ICellFormatter> cellFormattersDictionary;
-        protected Func<int, IList<ColumnHeadData>, ExcelWorksheet, string> grouperFunction;
+        protected readonly IDictionary<string,ICellValueFormatter> cellFormattersToValueDictionary;
+        protected Func<int, IList<ColumnHeadData>, DataTable, string> grouperFunction;
         protected string headLine = string.Empty;
 
         public TextOrderableBase()
         {
-            cellFormattersToValueDictionary = new Dictionary<CellFormat, ICellValueFormatter>
+            cellFormattersToValueDictionary = new Dictionary<string, ICellValueFormatter>
             {
-                { CellFormat.Date, new DateCellFormatter() },
-                { CellFormat.Integer, new IntegerCellFormatter() },
-                { CellFormat.Long, new LongCellFormatter() },
-                { CellFormat.Decimal, new DecimalCellFormatter() }
-            };
-
-            cellFormattersDictionary = new Dictionary<CellFormat, ICellFormatter>
-            {
-                { CellFormat.Decimal, new DecimalCellFormatter() }
+                { DateCellFormatter.Identifier, new DateCellFormatter() },
+                { IntegerCellFormatter.Identifier, new IntegerCellFormatter() },
+                { LongCellFormatter.Identifier, new LongCellFormatter() },
+                { DecimalCellFormatter.Identifier, new DecimalCellFormatter() }
             };
         }
 
-        public abstract void Execute(ExcelWorksheet excelWorksheet, IList<ColumnHeadData> lceColumnList, XElement definition, Func<int, IList<ColumnHeadData>, ExcelWorksheet, string> grouperFunction);
+        public abstract void Execute(DataTable dataTable, IList<ColumnHeadData> lceColumnList, XElement definition, Func<int, IList<ColumnHeadData>, DataTable, string> grouperFunction, Func<int, IList<ColumnHeadData>, DataTable, bool> ignoreRowFunction);
 
-        protected void InitializeExecution(ExcelWorksheet excelWorksheet, IList<ColumnHeadData> columnList, XElement definition, Func<int, IList<ColumnHeadData>, ExcelWorksheet, string> grouperFunction)
+        protected void InitializeExecution(DataTable dataTable, IList<ColumnHeadData> columnList, XElement definition, Func<int, IList<ColumnHeadData>, DataTable, string> grouperFunction)
         {
-            this.excelWorksheet = excelWorksheet;
+            this.dataTable = dataTable;
             this.columnList = columnList;
             this.definition = definition;
             this.grouperFunction = grouperFunction;
@@ -44,7 +38,7 @@ namespace ExcelToTxtConverter
 
         protected string RetrieveBuilderKey(int indexRecord)
         {
-            string builderKey = grouperFunction(indexRecord, columnList, excelWorksheet);
+            string builderKey = grouperFunction(indexRecord, columnList, dataTable);
             TryInitializeBuilder(builderKey);
 
             return builderKey;
@@ -58,26 +52,13 @@ namespace ExcelToTxtConverter
             headLine += value;
         }
 
-        protected void ApplyFormatToCell(ColumnHeadData columnHeadData, ExcelRange excelRange)
-        {
-            var cellFormat = columnHeadData.CellFormat;
-            if (!cellFormat.HasValue)
-                return;
-
-            cellFormattersDictionary.TryGetValue(cellFormat.Value, out ICellFormatter cellFormatter);
-            if (null == cellFormatter)
-                return;
-
-            cellFormatter.ApplyFormatToCell(excelRange);
-        }
-
         protected string ApplyFormatToValue(ColumnHeadData columnHeadData, string cellValue)
         {
             var cellFormat = columnHeadData.CellFormat;
-            if (!cellFormat.HasValue)
+            if (string.IsNullOrEmpty(cellFormat))
                 return cellValue;
 
-            cellFormattersToValueDictionary.TryGetValue(cellFormat.Value, out ICellValueFormatter cellFormatter);
+            cellFormattersToValueDictionary.TryGetValue(cellFormat, out ICellValueFormatter cellFormatter);
             if (null == cellFormatter)
                 return cellValue;
 
@@ -89,7 +70,11 @@ namespace ExcelToTxtConverter
             for (int j = 0; j < columnList.Count; j++)
             {
                 var col = columnList[j];
-                var cellValue = excelWorksheet.Cells[rowIndex, col.ColumnPosition].Text?.Trim();
+                if (col.ColumnPosition == -1)
+                {
+                    continue;
+                }
+                var cellValue = dataTable.Rows[rowIndex][col.ColumnPosition]?.ToString().Trim();
                 if (!string.IsNullOrEmpty(cellValue))
                     return false;
             }
