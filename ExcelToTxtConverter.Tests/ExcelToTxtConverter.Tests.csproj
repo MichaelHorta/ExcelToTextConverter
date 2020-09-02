@@ -1,18 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="definition.xml" />
-    <None Remove="LM_76166365-8_201701_0_1581301f-32f9-4119-8723-e6193bcd86cc_prod.xlsx" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="definition.xml" />
+    <EmbeddedResource Include="LD_76245069-0_201901_21231231231231231234_prod.xlsx" />
+    <EmbeddedResource Include="LD_Definition.xml" />
+    <EmbeddedResource Include="definition2.xml" />
+    <EmbeddedResource Include="LM_Definition.xml" />
+    <EmbeddedResource Include="DIARIO_2019_01.xls" />
+    <EmbeddedResource Include="LD_76245069-0_201901_2123123123123123123_prod.xlsx" />
     <EmbeddedResource Include="LM_76166365-8_201701_0_1581301f-32f9-4119-8723-e6193bcd86cc_prod.xlsx" />
   </ItemGroup>
 
@@ -20,10 +20,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="xunit" Version="2.4.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="EPPlus.Core" Version="1.5.4" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.7.1" />
   </ItemGroup>
 
   <ItemGroup>
