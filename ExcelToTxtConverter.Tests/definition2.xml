@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Definitions>
+  <Table>
+    <Column ExcelID="tipo de comprobante" TxtColumnText="&lt;TpoComp&gt;" TxtTextPosition="0"></Column>
+    <Column ExcelID="N° de comprobante" TxtColumnText="&lt;NumComp&gt;" TxtTextPosition="12" CellFormat="1"></Column>
+    <Column ExcelID="Fecha contable" TxtColumnText="&lt;FechaContable&gt;" TxtTextPosition="44" CellFormat="0"></Column>
+    <Column ExcelID="Glosa Analisis" TxtColumnText="&lt;GlosaAnalisis&gt;" TxtTextPosition="62"></Column>
+    <Column ExcelID="código cuenta" TxtColumnText="&lt;CodigoCuenta&gt;" TxtTextPosition="186"></Column>
+    <Column ExcelID="Rut" TxtColumnText="&lt;RUT&gt;" TxtTextPosition="216"></Column>
+    <Column ExcelID="Nombre" TxtColumnText="&lt;Nombre&gt;" TxtTextPosition="231"></Column>
+    <Column ExcelID="Vou Type" TxtColumnText="&lt;TpoDocum&gt;" TxtTextPosition="355"></Column>
+    <Column ExcelID="Reference Number" TxtColumnText="&lt;Numero&gt;" TxtTextPosition="418"></Column>
+    <Column ExcelID="Fecha Emision" TxtColumnText="&lt;FchEmision&gt;" TxtTextPosition="439" CellFormat="0"></Column>
+    <Column ExcelID="Fecha Vcto" TxtColumnText="&lt;FchVencimiento&gt;" TxtTextPosition="454"></Column>
+    <Column ExcelID="Glosa" TxtColumnText="&lt;Glosa&gt;" TxtTextPosition="473"></Column>
+    <Column ExcelID="Ref" TxtColumnText="&lt;Ref&gt;" TxtTextPosition="487"></Column>
+    <Column ExcelID="Debe" TxtColumnText="&lt;Debe&gt;" TxtTextPosition="509" CellFormat="3"></Column>
+    <Column ExcelID="Haber" TxtColumnText="&lt;Haber&gt;" TxtTextPosition="529" CellFormat="3"></Column>
+  </Table>
+</Definitions>

@@ -11,11 +11,34 @@ namespace ExcelToTxtConverter.Tests
         [Fact]
         public void Test1()
         {
+            var definitionResource = RetrieveEmbeddedResourceAsStream("definition2.xml");
+            var definition = XElement.Load(definitionResource);
+            var converter = new Converter(definition);
+            var excelData = RetrieveEmbeddedResourceAsByteArray("DIARIO_2019_01.xls");
+            var result = converter.Execute(excelData);
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Test2()
+        {
             var definitionResource = RetrieveEmbeddedResourceAsStream("definition.xml");
             var definition = XElement.Load(definitionResource);
             var converter = new Converter(definition);
             var excelData = RetrieveEmbeddedResourceAsByteArray("LM_76166365-8_201701_0_1581301f-32f9-4119-8723-e6193bcd86cc_prod.xlsx");
             var result = converter.Execute(excelData);
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void Test3()
+        {
+            var definitionResource = RetrieveEmbeddedResourceAsStream("LD_Definition.xml");
+            var definition = XElement.Load(definitionResource);
+            var converter = new Converter(definition);
+            var excelData = RetrieveEmbeddedResourceAsByteArray("LD_76245069-0_201901_21231231231231231234_prod.xlsx");
+            var result = converter.Execute(excelData);
+            Assert.NotNull(result);
         }
 
         private Stream RetrieveEmbeddedResourceAsStream(string resourceName)
