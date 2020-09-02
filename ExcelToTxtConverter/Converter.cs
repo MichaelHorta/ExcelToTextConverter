@@ -21,30 +21,15 @@ namespace ExcelToTxtConverter
         public IDictionary<string, StringBuilder> Execute(byte[] excelData, Func<int, IList<ColumnHeadData>, DataTable, string> grouperFunction = null, Func<int, IList<ColumnHeadData>, DataTable, bool> ignoreRowFunction = null)
         {
             try
-            {   
-                var tempFilenamePath = Path.GetTempFileName();
-                File.WriteAllBytes(tempFilenamePath, excelData);
-                System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-                using (var stream = File.Open(tempFilenamePath, FileMode.Open, FileAccess.Read))
-                {
-                    // Auto-detect format, supports:
-                    //  - Binary Excel files (2.0-2003 format; *.xls)
-                    //  - OpenXml Excel files (2007 format; *.xlsx, *.xlsb)
-                    using (var reader = ExcelReaderFactory.CreateReader(stream))
-                    {
-                        var result = reader.AsDataSet();
-                        DataTable dataTable = result.Tables[0];
+            {
+                var dataReader = new DataReader();
+                var dataTable = dataReader.Execute(excelData);
 
-                        var lceTxtWriter = new TextWriterBase(dataTable, Definition);
-                        lceTxtWriter.Execute(grouperFunction, ignoreRowFunction);
-                        ColumnList = lceTxtWriter.ColumnList;
+                var lceTxtWriter = new TextWriterBase(dataTable, Definition);
+                lceTxtWriter.Execute(grouperFunction, ignoreRowFunction);
+                ColumnList = lceTxtWriter.ColumnList;
 
-                        reader.Close();
-
-                        return lceTxtWriter.GetBuilders();
-                    }
-                }
-                
+                return lceTxtWriter.GetBuilders();
             }
             catch (Exception ex)
             {
