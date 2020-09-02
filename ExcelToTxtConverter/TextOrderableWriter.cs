@@ -10,7 +10,7 @@ namespace ExcelToTxtConverter
     public class TextOrderableWriter : TextOrderableBase
     {
         private readonly IDictionary<string, OrderableGroup> buildersDictionary;
-        private ColumnHeadData orderableColumnHeadData;
+        protected ColumnHeadData orderableColumnHeadData;
 
         public TextOrderableWriter() : base()
         {
@@ -81,12 +81,12 @@ namespace ExcelToTxtConverter
             }
         }
 
-        private void IdentifyOrderableColumn()
+        protected void IdentifyOrderableColumn()
         {
             orderableColumnHeadData = columnList.FirstOrDefault(c => null != c.Orderable);
         }
 
-        private string WriteRecordInLine(string line, TextRecord record, int distance = -1)
+        protected string WriteRecordInLine(string line, TextRecord record, int distance = -1)
         {
             if (distance != -1 && record.Value.Length > distance)
                 record.Value = record.Value.Substring(0, distance);
@@ -98,7 +98,7 @@ namespace ExcelToTxtConverter
             return line;
         }
 
-        private void WriteLine(string line, string builderKey, string orderableKeyGroupValue)
+        protected void WriteLine(string line, string builderKey, string orderableKeyGroupValue)
         {
             var orderableGroup = buildersDictionary[builderKey];
             orderableGroup.BuildersRecordsTable.TryGetValue(orderableKeyGroupValue, out StringBuilder stringBuilder);
