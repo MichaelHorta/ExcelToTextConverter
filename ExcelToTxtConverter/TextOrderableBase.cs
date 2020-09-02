@@ -11,18 +11,18 @@ namespace ExcelToTxtConverter
         protected DataTable dataTable;
         protected IList<ColumnHeadData> columnList;
         protected XElement definition;
-        private readonly IDictionary<CellFormat, ICellValueFormatter> cellFormattersToValueDictionary;
+        protected readonly IDictionary<string,ICellValueFormatter> cellFormattersToValueDictionary;
         protected Func<int, IList<ColumnHeadData>, DataTable, string> grouperFunction;
         protected string headLine = string.Empty;
 
         public TextOrderableBase()
         {
-            cellFormattersToValueDictionary = new Dictionary<CellFormat, ICellValueFormatter>
+            cellFormattersToValueDictionary = new Dictionary<string, ICellValueFormatter>
             {
-                { CellFormat.Date, new DateCellFormatter() },
-                { CellFormat.Integer, new IntegerCellFormatter() },
-                { CellFormat.Long, new LongCellFormatter() },
-                { CellFormat.Decimal, new DecimalCellFormatter() }
+                { DateCellFormatter.Identifier, new DateCellFormatter() },
+                { IntegerCellFormatter.Identifier, new IntegerCellFormatter() },
+                { LongCellFormatter.Identifier, new LongCellFormatter() },
+                { DecimalCellFormatter.Identifier, new DecimalCellFormatter() }
             };
         }
 
@@ -55,10 +55,10 @@ namespace ExcelToTxtConverter
         protected string ApplyFormatToValue(ColumnHeadData columnHeadData, string cellValue)
         {
             var cellFormat = columnHeadData.CellFormat;
-            if (!cellFormat.HasValue)
+            if (string.IsNullOrEmpty(cellFormat))
                 return cellValue;
 
-            cellFormattersToValueDictionary.TryGetValue(cellFormat.Value, out ICellValueFormatter cellFormatter);
+            cellFormattersToValueDictionary.TryGetValue(cellFormat, out ICellValueFormatter cellFormatter);
             if (null == cellFormatter)
                 return cellValue;
 
