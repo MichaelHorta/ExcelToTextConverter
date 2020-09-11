@@ -15,8 +15,8 @@ Benefits and Features
 -------
 - Optionally, sorts by column
 - Optionally, group by column
-- Only support for XLSX file
-- Supports .NET Standard 1.3, .NET 4
+- Supporting for ```Binary Excel files (2.0-2003 format; *.xls)``` and ```OpenXml Excel files (2007 format; *.xlsx, *.xlsb)```
+- Supports ```.NET Standard 2.0```, ```.NET Framework 4.6```
 
 Example
 -------
@@ -64,36 +64,50 @@ Indicate in the XML definition the orderable column
 
 Group by Column
 -------
+Indicate in the XML definition the grouper column
+```XML
+<Column ExcelID="Fecha" TxtColumnText="&lt;FechaContable&gt;" TxtTextPosition="44" CellFormat="0" GroupKey="true"></Column>
+```
 In this point its neccesary indicates a function that builds the group identifier
 ```C#
-public static string RetrieveGroupKey(int indexRecord, IList<ExcelToTxtConverter.ColumnHeadData> columnList, ExcelWorksheet excelWorksheet)
+public class MyTxtWriter
 {
-    string cellValue = string.Empty;
-    string cellFormat = string.Empty;
-    DateTime? dateValue = null;
-    try
+    public static string RetrieveBuilderKey(int indexRecord, IList<ExcelToTxtConverter.ColumnHeadData> lceColumnList, System.Data.DataTable dataTable)
     {
-        var col = columnList.Where(o => o.ExcelID.Equals("Fecha")).FirstOrDefault();
-        var cell = excelWorksheet.Cells[indexRecord, col.ColumnPosition];
-        cellValue = cell.Text?.ToString();
-        cellFormat = cell.Style.Numberformat.Format;
-
-        var filteredFormat = "dd\\-mm\\-yyyy";
-        if (string.Equals(cellFormat, filteredFormat, StringComparison.InvariantCultureIgnoreCase))
+        var col = lceColumnList.Where(o => o.GroupKey.Equals(true)).FirstOrDefault();
+        if (null == col)
         {
-            cell.Style.Numberformat.Format = "mm/dd/yyyy";
-            cellValue = cell.Text?.ToString();
+            return "{guid}";
         }
 
-        dateValue = DateTime.Parse(cellValue);
-    }
-    catch (Exception)
-    {
-        Console.WriteLine(string.Format("Error parsing date: {0} with format: {1}", cellValue, cellFormat));
-        throw;
+        string cellValue = string.Empty;
+        DateTime dateValue;
+        try
+        {
+
+            var cell = dataTable.Rows[indexRecord][col.ColumnPosition];
+            cellValue = cell?.ToString();
+
+            if (col.CellFormat.Equals(ExcelToTxtConverter.DateCellFormatter.Identifier))
+            {
+                dateValue = DateTime.Parse(cellValue);
+                return string.Format("{0}{1}" + dateValue.Year, dateValue.ToString("MM"));
+            }
+        }
+        catch (Exception)
+        {
+            Console.WriteLine(string.Format("Error parsing date: {0}", cellValue));
+            throw;
+        }
+
+        return "{guid}";
     }
 
-    return string.Format("{0}{1}" + dateValue.Value.Year, dateValue.Value.ToString("MM"));
+    public static string MakeBuilderKey(string builderKey)
+    {
+        builderKey = builderKey.Replace("{guid}", Guid.NewGuid().ToString());
+        return string.Format("{0}.txt", builderKey);
+    }
 }
 ```
 
@@ -102,8 +116,13 @@ Assembly assembly = typeof(MyClass).GetTypeInfo().Assembly;
 Stream definitionStream = assembly.GetManifestResourceStream(definitionFile));
 XElement definitionElement = XElement.Load(definitionStream);
 
-Func<int, IList<ColumnHeadData>, ExcelWorksheet, string> retrieveGroupKeyFunction = new Func<int, IList<ColumnHeadData>, ExcelWorksheet, string>(RetrieveGroupKey);
+Func<int, IList<ColumnHeadData>, System.Data.DataTable, string> retrieveGroupKeyFunction = new Func<int, IList<ColumnHeadData>, System.Data.DataTable, string>(MyTxtWriter.RetrieveBuilderKey);
 
 Converter converter = new Converter(definitionElement, retrieveGroupKeyFunction);
 IDictionary<string, StringBuilder> stringBuildersResult = converter.Execute(excelBytes);
+var resultDictionary = new Dictionary<string, string>();
+foreach (var generatedTxt in generatedTxts)
+{
+    resultDictionary.Add(MyTxtWriter.MakeBuilderKey(generatedTxt.Key), generatedTxt.Value.ToString());
+}
 ```
