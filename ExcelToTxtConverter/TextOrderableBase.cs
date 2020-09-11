@@ -38,7 +38,6 @@ namespace ExcelToTxtConverter
 
         protected string RetrieveBuilderKey(int indexRecord)
         {
-            var col = columnList.Where(o => o.GroupKey.Equals(true)).FirstOrDefault();
             string builderKey = grouperFunction(indexRecord, columnList, dataTable);
             TryInitializeBuilder(builderKey);
 
