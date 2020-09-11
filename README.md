@@ -15,8 +15,8 @@ Benefits and Features
 -------
 - Optionally, sorts by column
 - Optionally, group by column
-- Only support for XLSX file
-- Supports .NET Standard 1.3, .NET 4
+- Supporting for ```Binary Excel files (2.0-2003 format; *.xls)``` and ```OpenXml Excel files (2007 format; *.xlsx, *.xlsb)```
+- Supports ```.NET Standard 2.0```, ```.NET Framework 4.6```
 
 Example
 -------
