@@ -120,9 +120,9 @@ Func<int, IList<ColumnHeadData>, System.Data.DataTable, string> retrieveGroupKey
 
 Converter converter = new Converter(definitionElement, retrieveGroupKeyFunction);
 IDictionary<string, StringBuilder> stringBuildersResult = converter.Execute(excelBytes);
-var resultingTxts = new Dictionary<string, StringBuilder>();
+var resultDictionary = new Dictionary<string, string>();
 foreach (var generatedTxt in generatedTxts)
 {
-    resultingTxts.Add(MyTxtWriter.MakeBuilderKey(generatedTxt.Key), generatedTxt.Value);
+    resultDictionary.Add(MyTxtWriter.MakeBuilderKey(generatedTxt.Key), generatedTxt.Value.ToString());
 }
 ```
