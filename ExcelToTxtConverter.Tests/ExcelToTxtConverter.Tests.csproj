@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="LD_71097500-0_201901_0_PESO-CL_6629ca76-e811-4d8a-8361-60835ba24a50_prod.xlsx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="LD_71097500-0_201901_0_PESO-CL_6629ca76-e811-4d8a-8361-60835ba24a50_prod.xlsx" />
     <EmbeddedResource Include="LD_76245069-0_201901_21231231231231231234_prod.xlsx" />
     <EmbeddedResource Include="LD_Definition.xml" />
     <EmbeddedResource Include="definition2.xml" />
