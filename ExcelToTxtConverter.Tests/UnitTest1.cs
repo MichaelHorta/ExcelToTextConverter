@@ -36,7 +36,7 @@ namespace ExcelToTxtConverter.Tests
             var definitionResource = RetrieveEmbeddedResourceAsStream("LD_Definition.xml");
             var definition = XElement.Load(definitionResource);
             var converter = new Converter(definition);
-            var excelData = RetrieveEmbeddedResourceAsByteArray("LD_71097500-0_201901_0_PESO-CL_6629ca76-e811-4d8a-8361-60835ba24a50_prod.xlsx");
+            var excelData = RetrieveEmbeddedResourceAsByteArray("LD_76245069-0_201901_21231231231231231234_prod.xlsx");
             var result = converter.Execute(excelData);
             Assert.NotNull(result);
         }
