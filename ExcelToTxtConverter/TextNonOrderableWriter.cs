@@ -55,7 +55,7 @@ namespace ExcelToTxtConverter
                     if (col.ColumnPosition != -1)
                     {
                         var cell = dataTable.Rows[i][col.ColumnPosition];
-                        cellValue = cell?.ToString();
+                        cellValue = cell?.ToString().Trim();
                         cellValue = ApplyFormatToValue(col, cellValue);
                     }
 

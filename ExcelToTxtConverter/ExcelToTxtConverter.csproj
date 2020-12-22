@@ -9,7 +9,7 @@
     <Company />
     <PackageTags>Excel, TXT</PackageTags>
     <PackageLicenseUrl>https://github.com/MichaelHorta/ExcelToTxtConverter/blob/master/LICENSE</PackageLicenseUrl>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <PackageReleaseNotes>Supporting for:
 - Binary Excel files (2.0-2003 format; *.xls)
 - OpenXml Excel files (2007 format; *.xlsx, *.xlsb)</PackageReleaseNotes>
